@@ -4,9 +4,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        ElementoMultimediale[] element = new ElementoMultimediale[5];
+        ElementoMultimediale[] elementi = new ElementoMultimediale[5];
 
-        for (int i = 0; i < element.length ; i++){
+        for (int i = 0; i < elementi.length ; i++){
                 System.out.println("Inserisci il tipo di elemento multimediale (1 = Video, 2 = Registrazione, 3 = Immagine): ");
             int tipo = scanner.nextInt();
 
@@ -26,13 +26,10 @@ public class Main {
                     System.out.println("inserisci il volume");
                     int volumeVideo = scanner.nextInt();
 
-                    System.out.println("inserisci il volume");
-                    int alza = scanner.nextInt();
-
-
-
-                    element[i] = new Video(titolo,luminositaVideo,durataVideo,volumeVideo);
+                    elementi[i] = new Video(titolo,luminositaVideo,durataVideo,volumeVideo);
                     break;
+
+
                 case 2:
                     System.out.println("inserisci la durata ");
                     int durataRec = scanner.nextInt();
@@ -40,13 +37,15 @@ public class Main {
                     System.out.println("inserisci il volume");
                     int volumeRec = scanner.nextInt();
 
-                    element[i] = new Registrazione(titolo,durataRec,volumeRec);
+                    elementi[i] = new Registrazione(titolo,durataRec,volumeRec);
                     break;
+
+
                 case 3 :
                     System.out.println("inserisci luminosita");
                     int luminositaImg = scanner.nextInt();
 
-                    element[i] = new Immagini(titolo,luminositaImg);
+                    elementi[i] = new Immagini(titolo,luminositaImg);
                     break;
                 default:
                     System.out.println("Non Valido");
@@ -58,10 +57,10 @@ public class Main {
                 scelta = scanner.nextInt();
 
                 if (scelta >= 1 && scelta <= 5){
-                    if (element[scelta - 1] instanceof Riproducipile) {
-                        ((Riproducipile) element[scelta - 1]).play();
-                    } else if (element[scelta - 1] instanceof Immagini) {
-                        ((Immagini) element[scelta - 1]).Show();
+                    if (elementi[scelta - 1] instanceof Riproducipile) {
+                        ((Riproducipile) elementi[scelta - 1]).play();
+                    } else if (elementi[scelta - 1] instanceof Immagini) {
+                        ((Immagini) elementi[scelta - 1]).Show();
                     } else {
                         System.out.println("Elemento non riproducibile.");
                     }

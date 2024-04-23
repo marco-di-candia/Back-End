@@ -1,5 +1,5 @@
 public interface Riproducipile {
-    public void play();
+     void play();
 
 
 }
