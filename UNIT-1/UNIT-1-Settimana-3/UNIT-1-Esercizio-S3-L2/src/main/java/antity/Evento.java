@@ -2,23 +2,37 @@ package antity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
+
 @Entity
 @Table(name = "evento")
 public class Evento {
 	@Id
 	@GeneratedValue
 	private int id;
+
 	@Column(nullable = false,length = 30)
 	private String titolo;
+
 	@Column(name="data_locale")
 	private LocalDate dataEvento;
+
 	@Column(nullable = false,length = 30)
 	private String descrizione;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tipo_evento")
 	private TipoEvento tipoEvento;
+
 	@Column(nullable = false)
 	private int numeroMaxPartecipanti;
+
+	@OneToMany(mappedBy = "evento")
+	private List<Partecipazioni> partecipazioni;
+
+	@OneToOne
+	@JoinColumn(name = "location_id")
+	private Location location;
 
 	public Evento(LocalDate dataEvento, String descrizione, int id, int numeroMaxPartecipanti, TipoEvento tipoEvento, String titolo) {
 		this.dataEvento = dataEvento;
@@ -77,6 +91,14 @@ public class Evento {
 
 	public void setTitolo(String titolo) {
 		this.titolo = titolo;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 	@Override
