@@ -1,53 +1,68 @@
 package epicode.it.UNIT2EsercizioS6L2.service;
 
+
+import epicode.it.UNIT2EsercizioS6L2.Dto.AutoreDto;
 import epicode.it.UNIT2EsercizioS6L2.exception.AutoreNonTrovatoException;
 import epicode.it.UNIT2EsercizioS6L2.model.Autore;
+import epicode.it.UNIT2EsercizioS6L2.repository.AutoreRepository;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class AutoreService {
-	private List<Autore> Autores = new ArrayList<>();
+	@Autowired
+	private AutoreRepository autoreRepository;
 
-	public List<Autore> getAll() {
-		return Autores;
+	public String save(AutoreDto autoreDto) {
+		Autore autore = new Autore();
+		autore.setNome(autoreDto.getNome());
+		autore.setCognome(autoreDto.getCognome());
+		autore.setEmail(autoreDto.getEmail());
+		autore.setData_nascita(autoreDto.getData_nascita());
+
+		autoreRepository.save(autore);
+		return "autore con id=" + autore.getId() + " creata con successo";
 	}
 
-	public String save(Autore Autore) {
-		Autores.add(Autore);
-		return "autore Creato" + " " + Autore.getId();
+	public List<Autore> getAll() {
+		return autoreRepository.findAll();
 	}
 
 	public Optional<Autore> getById(int id) {
-		return Autores.stream().filter(blog -> blog.getId() == id).findFirst();
+		return autoreRepository.findById(id);
 	}
+	@SneakyThrows
+	public Autore update(int id, AutoreDto autoreDto)  {
+		Optional<Autore> aulaOptional = getById(id);
 
-	public Autore update(int id, Autore autore) throws AutoreNonTrovatoException {
-		Optional<Autore> autoreOpt = getById(id);
-		if (autoreOpt.isPresent()) {
-			Autore autore1 = autoreOpt.get();
-			autore1.setNome(autore.getNome());
-			autore1.setCognome(autore.getCognome());
-			autore1.setEmail(autore.getEmail());
-			autore1.setData_nascita(autore.getData_nascita());
-			return autore1;
+		if (aulaOptional.isPresent()) {
+			Autore autore = aulaOptional.get();
+			autore.setNome(autoreDto.getNome());
+			autore.setCognome(autoreDto.getCognome());
+			autore.setEmail(autoreDto.getEmail());
+			autore.setData_nascita(autoreDto.getData_nascita());
+
+			return autoreRepository.save(autore);
 		} else {
-			throw new AutoreNonTrovatoException("autore non trovato");
+			throw new AutoreNonTrovatoException("autore con id=" + id + " non trovato");
+		}
+	}
+	@SneakyThrows
+	public String delete(int id) {
+		Optional<Autore> autoreOptional = getById(id);
+
+		if (autoreOptional.isPresent()) {
+			autoreRepository.delete(autoreOptional.get());
+			return "Aula con id=" + id + " cancellata con successo";
+		} else {
+			throw new AutoreNonTrovatoException("Aula con id=" + id + " non trovata");
 		}
 	}
 
-	public String delete(int id) throws AutoreNonTrovatoException {
-		Optional<Autore> blogOpt = getById(id);
-
-		if (blogOpt.isPresent()) {
-			Autores.remove(blogOpt.get());
-			return "autore cancellato";
-		} else {
-			throw new AutoreNonTrovatoException("autore non trovato");
-		}
-	}
 
 }

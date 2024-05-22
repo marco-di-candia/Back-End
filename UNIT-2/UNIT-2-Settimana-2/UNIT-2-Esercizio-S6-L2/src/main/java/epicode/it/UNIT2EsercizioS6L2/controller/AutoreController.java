@@ -1,9 +1,8 @@
 package epicode.it.UNIT2EsercizioS6L2.controller;
 
+import epicode.it.UNIT2EsercizioS6L2.Dto.AutoreDto;
 import epicode.it.UNIT2EsercizioS6L2.exception.AutoreNonTrovatoException;
-import epicode.it.UNIT2EsercizioS6L2.exception.BlogNonTrovatoException;
 import epicode.it.UNIT2EsercizioS6L2.model.Autore;
-import epicode.it.UNIT2EsercizioS6L2.model.Blog;
 import epicode.it.UNIT2EsercizioS6L2.service.AutoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,28 +23,28 @@ public class AutoreController {
 	}
 
 	@PostMapping
-	public String saveBlog(@RequestBody Autore autore) {
-		return autoreService.save(autore);
+	public String save(@RequestBody AutoreDto autoreDto) {
+		return autoreService.save(autoreDto);
 	}
 
-	@GetMapping("/{id}")
-	public Autore getStudenteByMatricola(@PathVariable int id) throws AutoreNonTrovatoException {
-		Optional<Autore> blogOpt = autoreService.getById(id);
+	@GetMapping("/{id}") // Specify the path variable name
+	public Autore getById(@PathVariable("id") int id) throws AutoreNonTrovatoException {
+		Optional<Autore> autoreOptional = autoreService.getById(id);
 
-		if (blogOpt.isPresent()) {
-			return blogOpt.get();
+		if (autoreOptional.isPresent()) {
+			return autoreOptional.get();
 		} else {
-			throw new AutoreNonTrovatoException("autore con id " + id + " non trovato");
+			throw new AutoreNonTrovatoException("Autore con id=" + id + " non trovato");
 		}
 	}
 
 	@PutMapping("/{id}")
-	public Autore updateBlog(@PathVariable int id, @RequestBody Autore updatedBlog) throws AutoreNonTrovatoException {
-		return autoreService.update(id, updatedBlog);
+	public Autore update(@PathVariable("id") int id, @RequestBody AutoreDto autoreDto) throws AutoreNonTrovatoException {
+		return autoreService.update(id, autoreDto);
 	}
 
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable int id) throws AutoreNonTrovatoException {
-		autoreService.delete(id);
+	public String delete(@PathVariable("id") int id) throws AutoreNonTrovatoException {
+		return autoreService.delete(id);
 	}
 }

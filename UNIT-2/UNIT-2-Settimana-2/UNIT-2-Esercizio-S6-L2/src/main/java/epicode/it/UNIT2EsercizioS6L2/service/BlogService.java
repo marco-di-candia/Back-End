@@ -1,53 +1,86 @@
 package epicode.it.UNIT2EsercizioS6L2.service;
 
+import epicode.it.UNIT2EsercizioS6L2.Dto.BlogDto;
+import epicode.it.UNIT2EsercizioS6L2.exception.AutoreNonTrovatoException;
 import epicode.it.UNIT2EsercizioS6L2.exception.BlogNonTrovatoException;
+import epicode.it.UNIT2EsercizioS6L2.model.Autore;
 import epicode.it.UNIT2EsercizioS6L2.model.Blog;
+import epicode.it.UNIT2EsercizioS6L2.repository.AutoreRepository;
+import epicode.it.UNIT2EsercizioS6L2.repository.BlogRepository;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BlogService {
-	private List<Blog> blogs = new ArrayList<>();
 
-	public List<Blog> getAll() {
-		return blogs;
-	}
+	@Autowired
+	private AutoreRepository autoreRepository;
 
-	public String save(Blog blog) {
-		blogs.add(blog);
-		return "blog Creato" + " " + blog.getId();
-	}
+	@Autowired
+	private BlogRepository blogRepository;
 
-	public Optional<Blog> getById(int id) {
-		return blogs.stream().filter(blog -> blog.getId() == id).findFirst();
-	}
+	@SneakyThrows
+	public String saveBlog(BlogDto blogDto) {
+		Optional<Autore> autoreOptional = autoreRepository.findById(blogDto.getId_autore());
 
-	public Blog update(int id, Blog blog) throws BlogNonTrovatoException {
-		Optional<Blog> blogOpt = getById(id);
-		if (blogOpt.isPresent()) {
-			Blog blog1 = blogOpt.get();
-			blog1.setCategoria(blog.getCategoria());
-			blog1.setContenuto(blog.getContenuto());
-			blog1.setTitolo(blog.getTitolo());
-			blog1.setTempo_di_lettura(blog.getTempo_di_lettura());
-			blog1.setCover(blog.getCover());
-			return blog1;
+		if (autoreOptional.isPresent()) {
+			Autore autore = autoreOptional.get();
+			Blog blog = new Blog();
+			blog.setCategoria(blogDto.getCategoria());
+			blog.setTitolo(blogDto.getTitolo());
+			blog.setCover(blogDto.getCover());
+			blog.setContenuto(blogDto.getContenuto());
+			blog.setTempo_di_lettura(blogDto.getTempo_di_lettura());
+			blog.setAutore(autore);
+			blogRepository.save(blog);
+			return "Blog con id=" + blog.getId() + " salvato correttamente";
 		} else {
-			throw new BlogNonTrovatoException("Blog non trovato");
+			throw new AutoreNonTrovatoException("Autore con id=" + blogDto.getId_autore() + " non trovato");
 		}
 	}
 
-	public String delete(int id) throws BlogNonTrovatoException {
-		Optional<Blog> blogOpt = getById(id);
+	public Page<Blog> getblogs(int page, int size, String sortBy) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+		return blogRepository.findAll(pageable);
+	}
 
-		if (blogOpt.isPresent()) {
-			blogs.remove(blogOpt.get());
-			return "blog cancellato";
+	public Optional<Blog> getBlogById(int id) {
+		return blogRepository.findById(id);
+	}
+
+	@SneakyThrows
+	public Blog updateBlog(int id, BlogDto blogDto) {
+		Optional<Blog> blogOptional = getBlogById(id);
+
+		if (blogOptional.isPresent()) {
+			Blog blog = blogOptional.get();
+			blog.setCategoria(blogDto.getCategoria());
+			blog.setTitolo(blogDto.getTitolo());
+			blog.setCover(blogDto.getCover());
+			blog.setContenuto(blogDto.getContenuto());
+			blog.setTempo_di_lettura(blogDto.getTempo_di_lettura());
+			return blogRepository.save(blog);
 		} else {
-			throw new BlogNonTrovatoException("blog non trovato");
+			throw new BlogNonTrovatoException("Blog con id=" + id + " non trovato");
+		}
+	}
+
+	@SneakyThrows
+	public String deleteBlog(int id) {
+		Optional<Blog> blogOptional = getBlogById(id);
+
+		if (blogOptional.isPresent()) {
+			blogRepository.delete(blogOptional.get());
+			return "Blog con id=" + id + " cancellato con successo";
+		} else {
+			throw new BlogNonTrovatoException("Blog con id=" + id + " non trovato");
 		}
 	}
 }

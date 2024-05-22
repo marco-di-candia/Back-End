@@ -1,12 +1,14 @@
 package epicode.it.UNIT2EsercizioS6L2.controller;
 
-import epicode.it.UNIT2EsercizioS6L2.exception.BlogNonTrovatoException;
+import epicode.it.UNIT2EsercizioS6L2.Dto.BlogDto;
 import epicode.it.UNIT2EsercizioS6L2.model.Blog;
 import epicode.it.UNIT2EsercizioS6L2.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -17,33 +19,39 @@ public class BlogController {
 	private BlogService blogService;
 
 	@GetMapping
-	public List<Blog> getAll() {
-		return blogService.getAll();
+	public Page<Blog> getAllblogs(@RequestParam(defaultValue = "0") int page,
+								  @RequestParam(defaultValue = "15") int size,
+								  @RequestParam(defaultValue = "matricola") String sortBy){
+
+		return blogService.getblogs(page, size, sortBy);
 	}
 
+
 	@PostMapping
-	public String saveBlog(@RequestBody Blog blog) {
-		return blogService.save(blog);
+	public ResponseEntity<String> saveBlog(@RequestBody BlogDto blogDto) {
+		String response = blogService.saveBlog(blogDto);
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")
-	public Blog getStudenteByMatricola(@PathVariable int id) throws BlogNonTrovatoException {
-		Optional<Blog> blogOpt = blogService.getById(id);
-
-		if (blogOpt.isPresent()) {
-			return blogOpt.get();
-		} else {
-			throw new BlogNonTrovatoException("blog con id " + id + " non trovato");
-		}
+	public ResponseEntity<Blog> getBlogById(@PathVariable int id) {
+		Optional<Blog> blogOptional = blogService.getBlogById(id);
+		return blogOptional.map(blog -> new ResponseEntity<>(blog, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
+
 
 	@PutMapping("/{id}")
-	public Blog updateBlog(@PathVariable int id, @RequestBody Blog updatedBlog) throws BlogNonTrovatoException {
-		return blogService.update(id, updatedBlog);
+	public ResponseEntity<Blog> updateBlog(@PathVariable int id, @RequestBody BlogDto blogDto) {
+		Blog updatedBlog = blogService.updateBlog(id, blogDto);
+		return new ResponseEntity<>(updatedBlog, HttpStatus.OK);
 	}
 
+
 	@DeleteMapping("/{id}")
-	public void deleteBlog(@PathVariable int id) throws BlogNonTrovatoException {
-		blogService.delete(id);
+	public ResponseEntity<String> deleteBlog(@PathVariable int id) {
+		String response = blogService.deleteBlog(id);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
+

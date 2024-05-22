@@ -1,24 +1,25 @@
 package epicode.it.UNIT2EsercizioS6L2.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
+@Entity
+@Table(name = "blog")
 public class Blog {
+	@Id
+	@GeneratedValue
 	private int id;
-	private static int count;
 	private String categoria;
 	private String titolo;
 	private String cover;
 	private String contenuto;
 	private int tempo_di_lettura;
 
-	public Blog(String categoria, String contenuto, String cover, String titolo, int tempo_di_lettura) {
-		this.categoria = categoria;
-		this.contenuto = contenuto;
-		this.cover = "https://picsum.photos/200/300";
-		this.titolo = titolo;
-		this.tempo_di_lettura = tempo_di_lettura;
-		count++;
-		id = count;
-	}
+	@ManyToOne
+	@JoinColumn(name = "autore_id")
+	@JsonIgnore
+	private Autore autore;
+
 }
