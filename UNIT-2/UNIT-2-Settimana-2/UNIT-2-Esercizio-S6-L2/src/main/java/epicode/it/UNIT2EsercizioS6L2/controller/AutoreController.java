@@ -6,7 +6,9 @@ import epicode.it.UNIT2EsercizioS6L2.model.Autore;
 import epicode.it.UNIT2EsercizioS6L2.service.AutoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,5 +48,9 @@ public class AutoreController {
 	@DeleteMapping("/{id}")
 	public String delete(@PathVariable("id") int id) throws AutoreNonTrovatoException {
 		return autoreService.delete(id);
+	}
+	@PatchMapping("/{id}")
+	public String patchAvatar(@RequestBody MultipartFile avatar,@PathVariable int id) throws AutoreNonTrovatoException, IOException {
+		return autoreService.patchAvatar(id,avatar);
 	}
 }
