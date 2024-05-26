@@ -29,7 +29,7 @@ public class AutoreController {
 		return autoreService.save(autoreDto);
 	}
 
-	@GetMapping("/{id}") // Specify the path variable name
+	@GetMapping("/{id}")
 	public Autore getById(@PathVariable("id") int id) throws AutoreNonTrovatoException {
 		Optional<Autore> autoreOptional = autoreService.getById(id);
 
