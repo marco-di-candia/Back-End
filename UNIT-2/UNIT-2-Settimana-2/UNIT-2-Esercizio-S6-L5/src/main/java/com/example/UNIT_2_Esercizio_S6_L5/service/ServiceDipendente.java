@@ -36,6 +36,7 @@ public class ServiceDipendente {
 		dipendente.setAvatar(avatarUrl);
 		dipendente.setEmail(dtoDipendente.getEmail());
 		dipendente.setUsername(dtoDipendente.getCognome());
+		dipendente.setPassword(dtoDipendente.getPassword());
 		dipendenteR.save(dipendente);
 		return "Dipendente con id=" + dipendente.getId() + " salvato correttamente";
 
@@ -64,6 +65,7 @@ public class ServiceDipendente {
 			d.setCognome(dtoDipendente.getCognome());
 			d.setEmail(dtoDipendente.getEmail());
 			d.setUsername(dtoDipendente.getCognome());
+			d.setPassword(dtoDipendente.getPassword());
 
 			return dipendenteR.save(d);
 		} else {
@@ -94,5 +96,18 @@ public class ServiceDipendente {
 		} else {
 			throw new NotFoundException("autore con matricola=" + matricola + " non trovato");
 		}
+	}
+
+	public Dipendente getUserByEmail(String email){
+		Optional<Dipendente> userOptional = dipendenteR.findByEmail(email);
+
+		if(userOptional.isPresent()){
+			return userOptional.get();
+		}
+		else{
+			throw new NotFoundException("User with email=" + email + " not found");
+		}
+
+
 	}
 }

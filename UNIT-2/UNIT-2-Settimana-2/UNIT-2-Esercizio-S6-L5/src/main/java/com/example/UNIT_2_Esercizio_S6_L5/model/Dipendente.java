@@ -19,6 +19,7 @@ public class Dipendente {
 	private String cognome;
 	private String username;
 	private String email;
+	private String password;
 	@OneToMany(mappedBy = "dipendente")
 	@JsonManagedReference
 	private List<Dispositivo> dispositivi;
